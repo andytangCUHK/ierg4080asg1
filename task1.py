@@ -17,8 +17,10 @@ def problem_1(folder_path):
 
         if i < 2:
             tempfile = open("pos_temp.txt", "a+")
+            rate = "1"
         else:
             tempfile = open("neg_temp.txt", "a+")
+            rate = "0"
 
         for datafile in glob.glob(os.path.join(data_file_path[i], '*.txt')):
 
@@ -31,9 +33,9 @@ def problem_1(folder_path):
             content = content + "\r\n"
 
             # Get the rating
-            temp = datafile.replace(".txt", "")
-            rate = temp.split("_")
-            content = rate[1] + "\t" + content
+            #temp = datafile.replace(".txt", "")
+            #rate = temp.split("_")
+            content = rate + "\t" + content
 
             # Copy to temp file
             tempfile.write(content)
@@ -44,8 +46,6 @@ def problem_1(folder_path):
 
         # Close the temp file
         tempfile.close()
-        
-    print(datacount)
 
     # Preparing data
     train = open("train_data.txt", "w")
@@ -84,5 +84,3 @@ def problem_1(folder_path):
 # Main Program
 folder_path = "aclImdb"
 problem_1(folder_path)
-print("hello world")
-        
