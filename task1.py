@@ -81,6 +81,10 @@ def problem_1(folder_path):
                     test.write(line)
                     test_count += 1
     
+    # Remove temp file
+    os.remove("pos_temp.txt")
+    os.remove("neg_temp.txt")
+    
 # Main Program
 folder_path = "aclImdb"
 problem_1(folder_path)
