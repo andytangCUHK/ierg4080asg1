@@ -1,90 +1,50 @@
+# 1. Data Preparation
+# 1.1 
+#
+# Prepare a full dataset by combining all the training and test data found in the downloaded raw data
+# The full dataset is stored in the root as "combined"
+
 import glob
 import os
-import random
+import pandas as pd
+import re
+from sklearn.model_selection import train_test_split
 
-def problem_1(folder_path):
-   
-    data_file_path = (folder_path + "/train/pos/", folder_path + "/test/pos/", folder_path + "/train/neg/", folder_path + "/test/neg/")
-    
-    pos_temp = open("pos_temp.txt", "w")
-    neg_temp = open("neg_temp.txt", "w")
-    pos_temp.close()
-    neg_temp.close()
+folder_path="aclImdb"
+data_file_path = (folder_path + "/train/pos/", folder_path + "/test/pos/", folder_path + "/train/neg/", folder_path + "/test/neg/")
 
-    datacount = 0
+combined = open("combined", "w")
+datacount = 0
 
-    for i in range(4):
+for i in range(4):
+    rate = "0"
+    if i < 2:
+        rate = "1"
 
-        if i < 2:
-            tempfile = open("pos_temp.txt", "a+")
-            rate = "1"
-        else:
-            tempfile = open("neg_temp.txt", "a+")
-            rate = "0"
+    for datafile in glob.glob(os.path.join(data_file_path[i], '*.txt')):
 
-        for datafile in glob.glob(os.path.join(data_file_path[i], '*.txt')):
+        # Open train file
+        data = open(datafile, "r")
 
-            # Open train file
-            data = open(datafile, "r")
+        # String Preprocess
+        content = data.read()
+        content = content.replace("<br />", " ")
+        content = content.replace("\t", " ")
+        content = re.sub('[!@#$%^&*:<>,.\'\"()]', '', content)
+        content = re.sub(' +', ' ', content)
+        content = content + "\r\n"
 
-            # Replace <br> tag with space
-            content = data.read()
-            content = content.replace("<br />", " ")
-            content = content + "\r\n"
+        # Get the rating
+        #temp = datafile.replace(".txt", "")
+        #rate = temp.split("_")
+        content = rate + "\t" + content
 
-            # Get the rating
-            #temp = datafile.replace(".txt", "")
-            #rate = temp.split("_")
-            content = rate + "\t" + content
+        # Copy to combined file
+        combined.write(content)
+        datacount += 1
 
-            # Copy to temp file
-            tempfile.write(content)
-            datacount += 1
+        # Close train file
+        data.close()
 
-            # Close train file
-            data.close()
-
-        # Close the temp file
-        tempfile.close()
-
-    # Preparing data
-    train = open("train_data.txt", "w")
-    test = open("test_data.txt", "w")
-
-    # Combine pos data
-    train_count = 0
-    test_count = 0
-    train_qouta = datacount/2*0.7
-    test_qouta = datacount/2 - (datacount/2*0.7)
-
-    with open("pos_temp.txt") as pos:
-        for line in pos:
-            if (random.randint(1,101) < 70 and train_count < train_qouta) or (test_count >= test_qouta):
-                train.write(line)
-                train_count += 1
-            else:
-                if test_count < test_qouta:
-                    test.write(line)
-                    test_count += 1
-
-    # Combine neg data
-    train_count = 0
-    test_count = 0
-
-    with open("neg_temp.txt") as neg:
-        for line in neg:
-            if (random.randint(1,101) < 70 and train_count < train_qouta) or (test_count >= test_qouta):
-                train.write(line)
-                train_count += 1
-            else:
-                if test_count < test_qouta:
-                    test.write(line)
-                    test_count += 1
-    
-    # Remove temp file
-    os.remove("pos_temp.txt")
-    os.remove("neg_temp.txt")
-    
-# Main Program
-folder_path = "aclImdb"
-problem_1(folder_path)
+# Close the combined file
+combined.close()
