@@ -48,3 +48,22 @@ for i in range(4):
 
 # Close the combined file
 combined.close()
+
+# 1.2 & 1.3
+#
+# Randomly split the full dataset into a training set with 70% of the data, and a test set with 30% of the data
+# Check that the ratio of positive to negative reviews is roughly 1:1 in both the training and test set
+
+import pandas as pd
+from sklearn.model_selection import train_test_split
+
+# Read the data into a dataframe
+df = pd.read_csv("combined", sep="\t", header=None)
+df.shape
+df.columns = ["label", "text"]
+
+# Extract the training data
+X = df["text"]
+y = df["label"]
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, stratify=y, random_state=100)
